@@ -1,0 +1,65 @@
+{
+    "version": "1.0", 
+    "about": {
+        "description": "A demonstration stack with a simple CRUD API connected to redis.", 
+        "version": "1.0.0"
+    },
+    "containers": {
+        "api": {
+            "name": "api",
+            "stateful": false,
+            "image": {
+                "name": "api",
+                "origin": {
+                    "type": "docker-file",
+                    "details": {
+                        "build_file": "/Dockerfile",
+                        "context_dir": "/"
+                    }
+                }
+            },
+            "config": {
+                "network": {
+                    "hostname": "api",
+                    "ports": ["80:5000", "443:5000"],
+                    "public": "enable"
+                },
+                "deploy": {
+                    "instances": 1,
+                    "strategy": "first-available",
+                    "health_check": {
+                        "command": "./health-check.sh",
+                        "delay": "15s",
+                        "interval": "15s",
+                        "retries": 3,
+                        "restart": true,
+                        "timeout": "30s"
+                    }
+                }
+            }
+        },
+        "redis": {
+            "name": "redis",
+            "stateful": false,
+            "image": {
+                "name": "redis",
+                "origin": {
+                    "type": "docker-hub", 
+                    "details": {
+                        "target": "redis:latest"
+                    }
+                }
+            },
+            "config": {
+                "network": {
+                    "hostname": "redis",
+                    "ports": ["6379:6379"],
+                    "public": "disable"
+                },
+                "deploy": {
+                    "instances": 1
+                }
+            }
+        }
+    }
+}
